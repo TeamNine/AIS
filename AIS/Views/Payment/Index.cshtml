@@ -1,0 +1,194 @@
+﻿@model List<AIS.Models.PaymentInfo>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var quarter = new List<SelectListItem>()
+    {
+        new SelectListItem {Selected = true, Text = "1 квартал"},
+        new SelectListItem {Text = "2 квартал"},
+        new SelectListItem {Text = "3 квартал"},
+        new SelectListItem {Text = "4 квартал"},
+    };
+    var years = new List<SelectListItem>();
+    for (int i = 2015; i < 2021; i++)
+    {
+        years.Add(new SelectListItem() { Text = i.ToString() });
+    }
+    years[0].Selected = true;
+}
+@section scripts
+{
+    <script>
+        $(function() {
+            $(".datepicker").datepicker({
+                minDate: new Date(2015, 0, 1),
+                maxDate: $.datepicker.parseDate("dd.mm.yy", "@DateTime.Now.ToShortDateString()"), @*new Date(@DateTime.Now.Year, @DateTime.Now.Month - 1, @DateTime.Now.Day),*@
+                dateFormat: "dd.mm.yy",
+                showWeek: true,
+                gotoCurrent: true,
+                setDate: new Date(2015, 0, 1),
+                firstDay: 1
+            });
+            $.validator.addMethod('daterange', function(value, element, arg) {
+                var startDate = $.datepicker.parseDate("dd.mm.yy", arg[0]),
+                    endDate = $.datepicker.parseDate("dd.mm.yy", arg[1]),
+                    enteredDate;
+                try {
+                    enteredDate = $.datepicker.parseDate("dd.mm.yy", value);
+                } catch (e) {
+                    return false;
+                }
+                return ((startDate <= enteredDate) && (enteredDate <= endDate));
+            });
+            $.validator.addMethod('regex', function(value, element, regexp) {
+                var reg = new RegExp(regexp);
+                console.log(reg);
+                console.log(reg.test(value));
+                return reg.test(value);
+            });
+            $(".datepicker").val("@DateTime.Now.ToShortDateString()");
+
+            $("#info").validate({
+                rules: {
+                    inn0: {
+                        required: true,
+                        regex: /^\d{12}$/
+                    },
+                    adres0: {
+                        required: true,
+                        minlength: 6,
+                        maxlength: 250
+                    },
+                    area0: {
+                        required: true,
+                        number: true,
+                        min: 0,
+                        max: 1000
+                    },
+                    sum0: {
+                        required: true,
+                        number: true,
+                        min: 0,
+                        max: 100000
+                    },
+                    date0: {
+                        required: true,
+                        daterange: ["01.01.2015", "@DateTime.Now.ToShortDateString()"]
+                    }
+                },
+                messages: {
+                    inn0: {
+                        required: "We need your email address to contact you",
+                        email: "Your email address must be in the format of name@domain.com"
+                    },
+                    date0: {
+                        required: "Please specify your name",
+                        daterange: "Please specify a date between {0} and {1}."
+                    }
+                }
+            });
+        });
+        jQuery(function($) {
+            $("input[id^='inputSum']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
+            $("input[id^='inputArea']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
+            $("input[id^='inputInn']").numberMassk({beforePoint: 10});
+
+            var periods = [];
+            for (var i = 1; i < 5; i++) {
+                for (var j = 2015; j < 2021; j++) {
+                    periods.push(i + " квартал " + j + " года");
+                }
+            }
+            $("input[id^=inputPeriod]").autocomplete({
+                source: periods
+            });
+        });
+    </script>
+}
+<form class="form-horizontal" id="info">
+    @for (int i = 0; i < 3; i++)
+    {
+
+        <div class="form-group">
+            <label for="inputINN[@i]" class="col-sm-4 control-label">ИНН индивидуального предпринимателя</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="inputINN[@i]" name="@String.Format("inn{0}", i)" placeholder="ИНН">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputAdress[@i]" class="col-sm-4 control-label">Адрес торгового объекта</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="inputAdress[@i]" name="@String.Format("adres{0}", i)" placeholder="Адрес">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputArea[@i]" class="col-sm-4 control-label">Площадь торгового объекта</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="inputArea0" @*[@i]"*@ name="@String.Format("area{0}", i)" placeholder="Площадь">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputSum[@i]" class="col-sm-4 control-label">Сумма уплаченного сбора</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="inputSum[@i]" name="@String.Format("sum{0}", i)" placeholder="Сумма">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputPeriod[@i]" class="col-sm-4 control-label">Период произведения оплаты</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="inputPeriod[@i]" name="@String.Format("period{0}",i)" placeholder="Период">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputDate[@i]" class="col-sm-4 control-label">Дата осуществления платежа</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control datepicker" id="inputDate[@i]" name="@String.Format("date{0}", i)" placeholder="Дата">
+            </div>
+        </div>
+
+        if (i != 2)
+        {
+            <br />
+        }
+    }
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Sign in</button>
+        </div>
+    </div>
+</form>
+
+
+@*<div class="row form-inline">
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+            <input type="text" size="12" class="form-control" style="width: auto" placeholder="ИНН" >
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></span>
+            <input type="text" class="form-control" placeholder="Адрес">
+        </div>
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Площадь">
+            <input id="spinner" name="spinner" value="5.06" type="text" class="form-control"placeholder="Площадь">
+            <span class="input-group-addon">м<sup>2</sup></span>
+        </div>
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Сумма">
+            <span class="input-group-addon">руб.</span>
+        </div>
+        @Html.DropDownListFor(m => m[0].FidQuarter, quarter, new { @class = "form-control" })
+        @Html.DropDownListFor(m => m[0].FidQYear, years, new { @class = "form-control" })
+        <div class="input-group">
+            <input class="form-control" type="text" id="datepicker">
+        </div>
+    </div>*@>
+>
+>

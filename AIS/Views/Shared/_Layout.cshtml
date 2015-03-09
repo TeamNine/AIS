@@ -1,0 +1,47 @@
+﻿@using System.Web.Optimization
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <!-- Bootstrap -->
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/site")
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <p class="navbar-brand">AIS</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Begin page content -->
+    <div class="container" style="background-color: azure">
+        <div class="page-header" style="margin: 0">
+            <h1>AIS</h1>
+        </div>
+        @RenderBody()
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer navbar-inverse">
+        <div class="container">
+            <p class="text-muted">2015</p>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    @Scripts.Render("~/bundles/jquery")
+    <!-- jQuery validate -->
+    @Scripts.Render("~/bundles/jqueryval")
+    <!-- Bootstrap -->
+    @Scripts.Render("~/bundles/bootstrap")
+    <!-- datepicker -->
+    @Scripts.Render("~/bundles/datepicker")
+    @RenderSection("scripts", false)
+</body>
+</html>
