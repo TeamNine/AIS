@@ -128,7 +128,11 @@
                     var FidSum = addInput({ lbName: "Сумма уплаченного сбора", inName: "[" + c + "].FidSum", inPholder: "Сумма", attr: "" });
                     var FidPeriods = addSelect({ lbName: "Период произведения оплаты", inName: "[" + c + "].FidPeriods" });
                     var FidDate = addInput({ lbName: "Дата осуществления платежа", inName: "[" + c + "].FidDate", inPholder: "Дата", attr: "" });
-
+                    var FidIsUse =  $('<input/>', {
+                        name: "[" + c + "].IsUse",
+                        type: "hidden",
+                        value: "true"
+                    }); 
 
                     var mydiv = $('<div/>', {
                         id: 'form' + c,
@@ -207,58 +211,62 @@
             });
         </script>
     }
-        <form class="form-horizontal" id="info" action="@Url.Action("Index", "Payment")" method="post">
-            @for (var i = 0; i < 3; i++)
-{
-    <div id="@String.Format("form{0}",i)" style = "@String.Format("display:{0}", (@i > 0) ? "none" : "block")">
-        <div class="form-group">
-            @Html.LabelFor(pi => pi[i].FidINN, new { @class = "col-sm-4 control-label" })
-            <div class="col-sm-8">
-                @Html.EditorFor(pi => pi[i].FidINN, new { htmlAttributes = new { @class = "form-control", placeholder = "ИНН" } })
+<form class="form-horizontal" id="info" action="@Url.Action("Index", "Payment")" method="post">
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        if (Model[i].IsUse)
+        {
+        <div id="@String.Format("form{0}",i)" style = "@String.Format("display:{0}", (@i > 0) ? "none" : "block")">
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidINN, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidINN, new { htmlAttributes = new { @class = "form-control", placeholder = "ИНН" } })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(pi => pi[i].FidAdress, new { @class = "col-sm-4 control-label" })
-            <div class="col-sm-8">
-                @Html.EditorFor(pi => pi[i].FidAdress, new { htmlAttributes = new { @maxlength = "100", @class = "form-control", placeholder = "Адрес" } })
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidAdress, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidAdress, new { htmlAttributes = new { @maxlength = "100", @class = "form-control", placeholder = "Адрес" } })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(pi => pi[i].FidArea, new { @class = "col-sm-4 control-label" })
-            <div class="col-sm-8">
-                @Html.EditorFor(pi => pi[i].FidArea, new { htmlAttributes = new { @class = "form-control", @placeholder = "Площадь" } })
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidArea, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidArea, new { htmlAttributes = new { @class = "form-control", @placeholder = "Площадь" } })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(pi => pi[i].FidSum, new { @class = "col-sm-4 control-label" })
-            <div class="col-sm-8">
-                @Html.EditorFor(pi => pi[i].FidSum, new { htmlAttributes = new { @class = "form-control", @placeholder = "Сумма" } })
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidSum, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidSum, new { htmlAttributes = new { @class = "form-control", @placeholder = "Сумма" } })
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(pi => pi[i].FidPeriods, new { @class = "col-sm-4 control-label" })
-            <div class="col-sm-8">
-                @Html.DropDownListFor(pi => pi[i].FidPeriods, @periods, new { @class = "form-control" })
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidPeriods, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(pi => pi[i].FidPeriods, @periods, new { @class = "form-control" })
+                </div>
             </div>
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidDate, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidDate, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Дата" } })
+                </div>
+            </div>
+            @Html.HiddenFor(pi => pi[i].IsUse);
         </div>
-        <div class="form-group">
-            @Html.LabelFor(pi => pi[i].FidDate, new { @class = "col-sm-4 control-label" })
-            <div class="col-sm-8">
-                @Html.EditorFor(pi => pi[i].FidDate, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Дата" } })
+        }
+    }
+    <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-2">
+            <button type="submit" class="btn btn-default">Отправить</button>
+        </div>
+        <div class="col-sm-offset-3 col-sm-3">
+            <div class="btn-group pull-right" role="group">
+                <button type="button" id="remform" class="btn btn-danger" disabled="true">Удалить</button>
+                <button type="button" id="addform" class="btn btn-success ">Добавить</button>
             </div>
         </div>
     </div>
-}
-            <div class="form-group">
-                <div class="col-sm-offset-4 col-sm-2">
-                    <button type="submit" class="btn btn-default">Отправить</button>
-                </div>
-                <div class="col-sm-offset-3 col-sm-3">
-                    <div class="btn-group pull-right" role="group">
-                        <button type="button" id="remform" class="btn btn-danger" disabled="true">Удалить</button>
-                        <button type="button" id="addform" class="btn btn-success ">Добавить</button>
-                    </div>
-                </div>
-            </div>
-        </form>
+</form>
     

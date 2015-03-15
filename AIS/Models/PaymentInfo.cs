@@ -30,5 +30,6 @@ namespace AIS.Models
         public string FidPeriods { get; set; }
         [DisplayName("Дата осуществления платежа")]
         public string FidDate { get; set; }
+        public bool IsUse { get; set; }
     }
 }
