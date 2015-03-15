@@ -5,7 +5,6 @@ D:\Code\GitHub\AIS\AIS\bin\Antlr3.Runtime.dll
 D:\Code\GitHub\AIS\AIS\bin\ExpressiveAnnotations.dll
 D:\Code\GitHub\AIS\AIS\bin\ExpressiveAnnotations.MvcUnobtrusiveValidatorProvider.dll
 D:\Code\GitHub\AIS\AIS\bin\Microsoft.Web.Infrastructure.dll
-D:\Code\GitHub\AIS\AIS\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
 D:\Code\GitHub\AIS\AIS\bin\Newtonsoft.Json.dll
 D:\Code\GitHub\AIS\AIS\bin\System.Net.Http.Formatting.dll
 D:\Code\GitHub\AIS\AIS\bin\System.Web.Helpers.dll

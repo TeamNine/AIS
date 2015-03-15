@@ -1,194 +1,264 @@
-﻿@model List<AIS.Models.PaymentInfo>
+﻿@using System.Globalization
+@model List<AIS.Models.PaymentInfo>
+    @{
+        ViewBag.Title = "Index";
+        Layout = "~/Views/Shared/_Layout.cshtml";
 
-@{
-    ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-
-    var quarter = new List<SelectListItem>()
-    {
-        new SelectListItem {Selected = true, Text = "1 квартал"},
-        new SelectListItem {Text = "2 квартал"},
-        new SelectListItem {Text = "3 квартал"},
-        new SelectListItem {Text = "4 квартал"},
-    };
-    var years = new List<SelectListItem>();
-    for (int i = 2015; i < 2021; i++)
-    {
-        years.Add(new SelectListItem() { Text = i.ToString() });
+        var periods = new List<SelectListItem>();
+        for (var i = 2015; i < 2021; i++)
+        {
+            for (var j = 1; j < 5; j++)
+            {
+                periods.Add(item: new SelectListItem() { Text = String.Format("{0} квартал {1} год", j, i), Value = ((i - 2015) + (j - 1)).ToString(CultureInfo.InvariantCulture) });
+            }
+        }
+        var Today = DateTime.Now.ToShortDateString();
     }
-    years[0].Selected = true;
-}
-@section scripts
-{
-    <script>
-        $(function() {
-            $(".datepicker").datepicker({
-                minDate: new Date(2015, 0, 1),
-                maxDate: $.datepicker.parseDate("dd.mm.yy", "@DateTime.Now.ToShortDateString()"), @*new Date(@DateTime.Now.Year, @DateTime.Now.Month - 1, @DateTime.Now.Day),*@
-                dateFormat: "dd.mm.yy",
-                showWeek: true,
-                gotoCurrent: true,
-                setDate: new Date(2015, 0, 1),
-                firstDay: 1
-            });
-            $.validator.addMethod('daterange', function(value, element, arg) {
-                var startDate = $.datepicker.parseDate("dd.mm.yy", arg[0]),
-                    endDate = $.datepicker.parseDate("dd.mm.yy", arg[1]),
-                    enteredDate;
-                try {
-                    enteredDate = $.datepicker.parseDate("dd.mm.yy", value);
-                } catch (e) {
-                    return false;
-                }
-                return ((startDate <= enteredDate) && (enteredDate <= endDate));
-            });
-            $.validator.addMethod('regex', function(value, element, regexp) {
-                var reg = new RegExp(regexp);
-                console.log(reg);
-                console.log(reg.test(value));
-                return reg.test(value);
-            });
-            $(".datepicker").val("@DateTime.Now.ToShortDateString()");
+    @section scripts
+    {
+        <script>
+            $(function() {
+                $.datepicker.setDefaults($.datepicker.regional["ru"]);
 
-            $("#info").validate({
-                rules: {
-                    inn0: {
+
+                $.datepicker.setDefaults({
+                    minDate: new Date(2015, 0, 1),
+                    maxDate: $.datepicker.parseDate("dd.mm.yy", "@Today"),
+                    dateFormat: "dd.mm.yy",
+                    showWeek: true,
+                    gotoCurrent: true,
+                    setDate: new Date(2015, 0, 1),
+                    firstDay: 1
+                });
+                $(".datepicker").datepicker();
+                @*$(".datepicker").datepicker({
+                    minDate: new Date(2015, 0, 1),
+                    maxDate: $.datepicker.parseDate("dd.mm.yy", "@Today"),
+                    dateFormat: "dd.mm.yy",
+                    showWeek: true,
+                    gotoCurrent: true,
+                    setDate: new Date(2015, 0, 1),
+                    firstDay: 1
+                });*@
+
+                $.validator.addMethod('daterange', function(value, element, arg) {
+                    var startDate = $.datepicker.parseDate("dd.mm.yy", arg[0]),
+                        endDate = $.datepicker.parseDate("dd.mm.yy", arg[1]),
+                        enteredDate;
+                    try {
+                        enteredDate = $.datepicker.parseDate("dd.mm.yy", value);
+                    } catch (e) {
+                        return false;
+                    }
+                    return ((startDate <= enteredDate) && (enteredDate <= endDate));
+                });
+
+                $.validator.addMethod('regex', function(value, element, regexp) {
+                    var reg = new RegExp(regexp);
+                    return reg.test(value);
+                });
+
+                $(".datepicker").val("@Today");
+
+                $("#info").validate();
+                $("[name$='FidINN']").each(function() {
+                    $(this).rules('add', {
                         required: true,
-                        regex: /^\d{12}$/
-                    },
-                    adres0: {
+                        regex: /^\d{12}$/,
+                        messages: {
+                            required: "Необходимо ввести ИНН индивидуального предпринимателя",
+                            regex: "ИНН должен состоять из 12 цифр"
+                        }
+                    });
+                });
+                $("[name$='FidAdress']").each(function() {
+                    $(this).rules('add', {
                         required: true,
                         minlength: 6,
-                        maxlength: 250
-                    },
-                    area0: {
+                        messages: {
+                            required: "Необходимо ввести адрес торгового объекта",
+                            minlength: "Длинна адреса должна быть больше 6 символов"
+                        }
+                    });
+                });
+                $("[name$='FidArea']").each(function() {
+                    $(this).rules('add', {
                         required: true,
                         number: true,
-                        min: 0,
-                        max: 1000
-                    },
-                    sum0: {
+                        range: [0.01, 1000],
+                        messages: {
+                            required: "Необходимо ввести площадь торгового объекта",
+                            range: "Площадь должна быть положительным целым числом не превышающим 1000"
+                        }
+                    });
+                });
+                $("[name$='FidSum']").each(function() {
+                    $(this).rules('add', {
                         required: true,
                         number: true,
-                        min: 0,
-                        max: 100000
-                    },
-                    date0: {
+                        range: [0.01, 1000000000],
+                        messages: {
+                            required: "Необходимо ввести сумму уплаченного сбора",
+                            range: "Сумма должна быть положительным целым числом не превышающим 1000000000"
+                        }
+                    });
+                });
+
+                $("[name$='FidDate']").each(function() {
+                    $(this).rules('add', {
                         required: true,
-                        daterange: ["01.01.2015", "@DateTime.Now.ToShortDateString()"]
-                    }
-                },
-                messages: {
-                    inn0: {
-                        required: "We need your email address to contact you",
-                        email: "Your email address must be in the format of name@domain.com"
-                    },
-                    date0: {
-                        required: "Please specify your name",
-                        daterange: "Please specify a date between {0} and {1}."
-                    }
-                }
+                        daterange: ["01.01.2015", "@Today"],
+                        messages: {
+                            required: "Необходимо ввести дату платежа",
+                            daterange: "Дата должна находится между 01.01.2015 и @Today"
+                        }
+                    });
+                });
             });
-        });
-        jQuery(function($) {
-            $("input[id^='inputSum']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
-            $("input[id^='inputArea']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
-            $("input[id^='inputInn']").numberMassk({beforePoint: 10});
+            jQuery(function($) {
+                $("select[name$='FidPeriods']").select2();
+                $("input[name$='FidINN']").numberMask({ beforePoint: 12 });
+                $("input[name$='FidSum']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
+                $("input[name$='FidArea']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
 
-            var periods = [];
-            for (var i = 1; i < 5; i++) {
-                for (var j = 2015; j < 2021; j++) {
-                    periods.push(i + " квартал " + j + " года");
+                function addForm(c) {
+                    var FidINN = addInput({ lbName: "ИНН индивидуального предпринимателя", inName: "[" + c + "].FidINN", inPholder: "ИНН", attr: "" });
+                    var FidAdress = addInput({ lbName: "Адрес торгового объекта", inName: "[" + c + "].FidAdress", inPholder: "Адрес", attr: "maxlength='100'" });
+                    var FidArea = addInput({ lbName: "Площадь торгового объекта", inName: "[" + c + "].FidArea", inPholder: "Площадь", attr: "" });
+                    var FidSum = addInput({ lbName: "Сумма уплаченного сбора", inName: "[" + c + "].FidSum", inPholder: "Сумма", attr: "" });
+                    var FidPeriods = addSelect({ lbName: "Период произведения оплаты", inName: "[" + c + "].FidPeriods" });
+                    var FidDate = addInput({ lbName: "Дата осуществления платежа", inName: "[" + c + "].FidDate", inPholder: "Дата", attr: "" });
+
+
+                    var mydiv = $('<div/>', {
+                        id: 'form' + c,
+                    });
+
+                    mydiv.append(FidINN).append(FidAdress).append(FidArea).append(FidSum).append(FidPeriods).append(FidDate);
+
+                    $("#form"+(c-1)).after(mydiv);
+
+                    $("select[name='[" + c + "].FidPeriods']").select2();
+                    $("input[name='[" + c + "].FidDate']").datepicker().val("@Today");
                 }
-            }
-            $("input[id^=inputPeriod]").autocomplete({
-                source: periods
+
+                function remForm(c) {
+                    $("#form" + c).remove();
+                }
+
+                function addInput(props) {
+                    var fg = document.createElement("div");
+                    fg.setAttribute('class', "form-group");
+                    fg.innerHTML = '<label class="col-sm-4 control-label">' + props['lbName'] + '</label><div class="col-sm-8"><input class="form-control" name="' + props['inName'] + '"' + props['attr'] + ' placeholder="' + props['inPholder'] + '" type="text" value="" /></div>';
+                    return fg;
+                }
+
+                function addSelect(props) {
+                    var myselect = $('<select/>', { name: props['inName'],  class: "form-control" });
+                    var items = [];
+                    for (var i = 2015; i < 2021; i++)
+                        for (var j = 1; j < 5; j++)
+                            items.push(j + " квартал " + i + " год");
+                    $.each(items, function () {
+                        $('<option/>', {
+                            val: this,
+                            text: this
+                        }).appendTo(myselect);
+                    });
+                    myselect.val(items[0]);
+
+                    var fg = document.createElement("div");
+                    fg.setAttribute('class', "form-group");
+                    console.log(myselect.outerHTML);
+                    console.log($(myselect).outerHTML);
+                    fg.innerHTML = '<label class="col-sm-4 control-label">' + props['lbName'] + '</label><div class="col-sm-8">' + myselect[0].outerHTML + '</div>';
+                    return fg;
+                }
+
+                $("#addform").click(function() {
+                    if (count == 2) {
+                        console.log("err max");
+                    } else {
+                        count++;
+                        addForm(count);
+                        $("#remform").attr('disabled', false);
+                    }
+                    if (count == 2) {
+                        $("#addform").attr('disabled', true);
+                    }
+                    console.log(count);
+                });
+
+                $("#remform").click(function() {
+                    if (count == 0) {
+                        console.log("err min");
+                    } else {
+                        remForm(count);
+                        count--;
+                        $("#addform").attr('disabled', false);
+                    }
+                    if (count == 0) {
+                        $("#remform").attr('disabled', true);
+                    }
+                    console.log(count);
+                });
+
+                var count = 0;
             });
-        });
-    </script>
-}
-<form class="form-horizontal" id="info">
-    @for (int i = 0; i < 3; i++)
-    {
-
-        <div class="form-group">
-            <label for="inputINN[@i]" class="col-sm-4 control-label">ИНН индивидуального предпринимателя</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="inputINN[@i]" name="@String.Format("inn{0}", i)" placeholder="ИНН">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="inputAdress[@i]" class="col-sm-4 control-label">Адрес торгового объекта</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="inputAdress[@i]" name="@String.Format("adres{0}", i)" placeholder="Адрес">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="inputArea[@i]" class="col-sm-4 control-label">Площадь торгового объекта</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="inputArea0" @*[@i]"*@ name="@String.Format("area{0}", i)" placeholder="Площадь">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="inputSum[@i]" class="col-sm-4 control-label">Сумма уплаченного сбора</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="inputSum[@i]" name="@String.Format("sum{0}", i)" placeholder="Сумма">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="inputPeriod[@i]" class="col-sm-4 control-label">Период произведения оплаты</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="inputPeriod[@i]" name="@String.Format("period{0}",i)" placeholder="Период">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="inputDate[@i]" class="col-sm-4 control-label">Дата осуществления платежа</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control datepicker" id="inputDate[@i]" name="@String.Format("date{0}", i)" placeholder="Дата">
-            </div>
-        </div>
-
-        if (i != 2)
-        {
-            <br />
-        }
+        </script>
     }
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default">Sign in</button>
+        <form class="form-horizontal" id="info" action="@Url.Action("Index", "Payment")" method="post">
+            @for (var i = 0; i < 3; i++)
+{
+    <div id="@String.Format("form{0}",i)" style = "@String.Format("display:{0}", (@i > 0) ? "none" : "block")">
+        <div class="form-group">
+            @Html.LabelFor(pi => pi[i].FidINN, new { @class = "col-sm-4 control-label" })
+            <div class="col-sm-8">
+                @Html.EditorFor(pi => pi[i].FidINN, new { htmlAttributes = new { @class = "form-control", placeholder = "ИНН" } })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(pi => pi[i].FidAdress, new { @class = "col-sm-4 control-label" })
+            <div class="col-sm-8">
+                @Html.EditorFor(pi => pi[i].FidAdress, new { htmlAttributes = new { @maxlength = "100", @class = "form-control", placeholder = "Адрес" } })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(pi => pi[i].FidArea, new { @class = "col-sm-4 control-label" })
+            <div class="col-sm-8">
+                @Html.EditorFor(pi => pi[i].FidArea, new { htmlAttributes = new { @class = "form-control", @placeholder = "Площадь" } })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(pi => pi[i].FidSum, new { @class = "col-sm-4 control-label" })
+            <div class="col-sm-8">
+                @Html.EditorFor(pi => pi[i].FidSum, new { htmlAttributes = new { @class = "form-control", @placeholder = "Сумма" } })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(pi => pi[i].FidPeriods, new { @class = "col-sm-4 control-label" })
+            <div class="col-sm-8">
+                @Html.DropDownListFor(pi => pi[i].FidPeriods, @periods, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(pi => pi[i].FidDate, new { @class = "col-sm-4 control-label" })
+            <div class="col-sm-8">
+                @Html.EditorFor(pi => pi[i].FidDate, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Дата" } })
+            </div>
         </div>
     </div>
-</form>
-
-
-@*<div class="row form-inline">
-        <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
-            <input type="text" size="12" class="form-control" style="width: auto" placeholder="ИНН" >
-        </div>
-        <div class="input-group">
-            <span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></span>
-            <input type="text" class="form-control" placeholder="Адрес">
-        </div>
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Площадь">
-            <input id="spinner" name="spinner" value="5.06" type="text" class="form-control"placeholder="Площадь">
-            <span class="input-group-addon">м<sup>2</sup></span>
-        </div>
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Сумма">
-            <span class="input-group-addon">руб.</span>
-        </div>
-        @Html.DropDownListFor(m => m[0].FidQuarter, quarter, new { @class = "form-control" })
-        @Html.DropDownListFor(m => m[0].FidQYear, years, new { @class = "form-control" })
-        <div class="input-group">
-            <input class="form-control" type="text" id="datepicker">
-        </div>
-    </div>*@>
->
->
+}
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-2">
+                    <button type="submit" class="btn btn-default">Отправить</button>
+                </div>
+                <div class="col-sm-offset-3 col-sm-3">
+                    <div class="btn-group pull-right" role="group">
+                        <button type="button" id="remform" class="btn btn-danger" disabled="true">Удалить</button>
+                        <button type="button" id="addform" class="btn btn-success ">Добавить</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    

@@ -1,0 +1,4 @@
+﻿@{
+    var htmlAttributesObject = ViewData["htmlAttributes"] ?? new { @class = "form-control"};
+}
+@Html.TextBox("", ViewData.TemplateInfo.FormattedModelValue, htmlAttributesObject)

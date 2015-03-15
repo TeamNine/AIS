@@ -6,7 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewBag.Title</title>
     <!-- Bootstrap -->
-    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/bootstrap")
+    <!-- JQ ui bootstrap style-->
+    @Styles.Render("~/Content/jquibootstrap")
+    <!-- Bootstrap datetimepicker-->
+    @Styles.Render("~/Content/datetimepicker")
+    <!-- Select2 css-->
+    @Styles.Render("~/Content/select2")
+    <!-- Site css-->
     @Styles.Render("~/Content/site")
 </head>
 <body>
@@ -33,15 +40,21 @@
             <p class="text-muted">2015</p>
         </div>
     </footer>
-
+    
     <!-- jQuery -->
     @Scripts.Render("~/bundles/jquery")
+    <!-- jQuery ui -->
+    @Scripts.Render("~/bundles/jqueryui")
     <!-- jQuery validate -->
     @Scripts.Render("~/bundles/jqueryval")
+    <!-- jQuery numbermask -->
+    @Scripts.Render("~/bundles/inputmask")
     <!-- Bootstrap -->
     @Scripts.Render("~/bundles/bootstrap")
-    <!-- datepicker -->
-    @Scripts.Render("~/bundles/datepicker")
+    <!-- Select2 -->
+    @Scripts.Render("~/bundles/select2")
+    <!-- JQ UI datetimepicker ru localizarion -->
+    @Scripts.Render("~/bundles/datepicker_ru")
     @RenderSection("scripts", false)
 </body>
 </html>
