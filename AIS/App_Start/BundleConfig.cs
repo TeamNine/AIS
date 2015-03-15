@@ -19,6 +19,7 @@ namespace AIS.App_Start
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include("~/Scripts/bootstrap.js"));
             bundles.Add(new ScriptBundle("~/bundles/select2").Include("~/Scripts/select2.js"));
             bundles.Add(new ScriptBundle("~/bundles/datepicker_ru").Include("~/Scripts/datepicker-ru.js"));
+            bundles.Add(new ScriptBundle("~/bundles/formsetup").Include("~/Scripts/formsetup.js"));
 
             bundles.Add(new StyleBundle("~/Content/bootstrap").Include("~/Content/bootstrap.css"));
             bundles.Add(new StyleBundle("~/Content/jquibootstrap").Include("~/Content/jquery-ui-1.10.0.custom.css"));

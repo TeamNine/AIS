@@ -9,176 +9,29 @@
         {
             for (var j = 1; j < 5; j++)
             {
-                periods.Add(item: new SelectListItem() { Text = String.Format("{0} квартал {1} год", j, i), Value = ((i - 2015) + (j - 1)).ToString(CultureInfo.InvariantCulture) });
+                periods.Add(item: new SelectListItem() { Text = String.Format("{0} квартал {1} год", j, i), Value = String.Format("{0}-{1}",i,j)});
             }
         }
-        var Today = DateTime.Now.ToShortDateString();
+        periods[0].Selected = true;
     }
     @section scripts
     {
         <script>
-            $(function() {
-                $.datepicker.setDefaults($.datepicker.regional["ru"]);
-
-
-                $.datepicker.setDefaults({
-                    minDate: new Date(2015, 0, 1),
-                    maxDate: $.datepicker.parseDate("dd.mm.yy", "@Today"),
-                    dateFormat: "dd.mm.yy",
-                    showWeek: true,
-                    gotoCurrent: true,
-                    setDate: new Date(2015, 0, 1),
-                    firstDay: 1
-                });
-                $(".datepicker").datepicker();
-                @*$(".datepicker").datepicker({
-                    minDate: new Date(2015, 0, 1),
-                    maxDate: $.datepicker.parseDate("dd.mm.yy", "@Today"),
-                    dateFormat: "dd.mm.yy",
-                    showWeek: true,
-                    gotoCurrent: true,
-                    setDate: new Date(2015, 0, 1),
-                    firstDay: 1
-                });*@
-
-                $.validator.addMethod('daterange', function(value, element, arg) {
-                    var startDate = $.datepicker.parseDate("dd.mm.yy", arg[0]),
-                        endDate = $.datepicker.parseDate("dd.mm.yy", arg[1]),
-                        enteredDate;
-                    try {
-                        enteredDate = $.datepicker.parseDate("dd.mm.yy", value);
-                    } catch (e) {
-                        return false;
-                    }
-                    return ((startDate <= enteredDate) && (enteredDate <= endDate));
-                });
-
-                $.validator.addMethod('regex', function(value, element, regexp) {
-                    var reg = new RegExp(regexp);
-                    return reg.test(value);
-                });
-
-                $(".datepicker").val("@Today");
-
+            jQuery(function ($) {
                 $("#info").validate();
-                $("[name$='FidINN']").each(function() {
-                    $(this).rules('add', {
-                        required: true,
-                        regex: /^\d{12}$/,
-                        messages: {
-                            required: "Необходимо ввести ИНН индивидуального предпринимателя",
-                            regex: "ИНН должен состоять из 12 цифр"
-                        }
-                    });
-                });
-                $("[name$='FidAdress']").each(function() {
-                    $(this).rules('add', {
-                        required: true,
-                        minlength: 6,
-                        messages: {
-                            required: "Необходимо ввести адрес торгового объекта",
-                            minlength: "Длинна адреса должна быть больше 6 символов"
-                        }
-                    });
-                });
-                $("[name$='FidArea']").each(function() {
-                    $(this).rules('add', {
-                        required: true,
-                        number: true,
-                        range: [0.01, 1000],
-                        messages: {
-                            required: "Необходимо ввести площадь торгового объекта",
-                            range: "Площадь должна быть положительным целым числом не превышающим 1000"
-                        }
-                    });
-                });
-                $("[name$='FidSum']").each(function() {
-                    $(this).rules('add', {
-                        required: true,
-                        number: true,
-                        range: [0.01, 1000000000],
-                        messages: {
-                            required: "Необходимо ввести сумму уплаченного сбора",
-                            range: "Сумма должна быть положительным целым числом не превышающим 1000000000"
-                        }
-                    });
-                });
-
-                $("[name$='FidDate']").each(function() {
-                    $(this).rules('add', {
-                        required: true,
-                        daterange: ["01.01.2015", "@Today"],
-                        messages: {
-                            required: "Необходимо ввести дату платежа",
-                            daterange: "Дата должна находится между 01.01.2015 и @Today"
-                        }
-                    });
-                });
-            });
-            jQuery(function($) {
-                $("select[name$='FidPeriods']").select2();
-                $("input[name$='FidINN']").numberMask({ beforePoint: 12 });
-                $("input[name$='FidSum']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
-                $("input[name$='FidArea']").numberMask({ type: 'float', beforePoint: 10, afterPoint: 2, decimalMark: '.' });
-
-                function addForm(c) {
-                    var FidINN = addInput({ lbName: "ИНН индивидуального предпринимателя", inName: "[" + c + "].FidINN", inPholder: "ИНН", attr: "" });
-                    var FidAdress = addInput({ lbName: "Адрес торгового объекта", inName: "[" + c + "].FidAdress", inPholder: "Адрес", attr: "maxlength='100'" });
-                    var FidArea = addInput({ lbName: "Площадь торгового объекта", inName: "[" + c + "].FidArea", inPholder: "Площадь", attr: "" });
-                    var FidSum = addInput({ lbName: "Сумма уплаченного сбора", inName: "[" + c + "].FidSum", inPholder: "Сумма", attr: "" });
-                    var FidPeriods = addSelect({ lbName: "Период произведения оплаты", inName: "[" + c + "].FidPeriods" });
-                    var FidDate = addInput({ lbName: "Дата осуществления платежа", inName: "[" + c + "].FidDate", inPholder: "Дата", attr: "" });
-                    var FidIsUse =  $('<input/>', {
-                        name: "[" + c + "].IsUse",
-                        type: "hidden",
-                        value: "true"
-                    }); 
-
-                    var mydiv = $('<div/>', {
-                        id: 'form' + c,
-                    });
-
-                    mydiv.append(FidINN).append(FidAdress).append(FidArea).append(FidSum).append(FidPeriods).append(FidDate);
-
-                    $("#form"+(c-1)).after(mydiv);
-
-                    $("select[name='[" + c + "].FidPeriods']").select2();
-                    $("input[name='[" + c + "].FidDate']").datepicker().val("@Today");
+                var count =  @Html.Raw((Model.Count-1) + ";")
+                @for (var i = 0; i < Model.Count; i++)
+                {
+                    if (Model[i].IsUse)
+                    {
+                        @Html.Raw("createRules(" + i + ");")
+                    }
                 }
 
-                function remForm(c) {
-                    $("#form" + c).remove();
+                @if (ViewBag.Errors != null)
+                {
+                    @Html.Raw("$('#info').valid();")
                 }
-
-                function addInput(props) {
-                    var fg = document.createElement("div");
-                    fg.setAttribute('class', "form-group");
-                    fg.innerHTML = '<label class="col-sm-4 control-label">' + props['lbName'] + '</label><div class="col-sm-8"><input class="form-control" name="' + props['inName'] + '"' + props['attr'] + ' placeholder="' + props['inPholder'] + '" type="text" value="" /></div>';
-                    return fg;
-                }
-
-                function addSelect(props) {
-                    var myselect = $('<select/>', { name: props['inName'],  class: "form-control" });
-                    var items = [];
-                    for (var i = 2015; i < 2021; i++)
-                        for (var j = 1; j < 5; j++)
-                            items.push(j + " квартал " + i + " год");
-                    $.each(items, function () {
-                        $('<option/>', {
-                            val: this,
-                            text: this
-                        }).appendTo(myselect);
-                    });
-                    myselect.val(items[0]);
-
-                    var fg = document.createElement("div");
-                    fg.setAttribute('class', "form-group");
-                    console.log(myselect.outerHTML);
-                    console.log($(myselect).outerHTML);
-                    fg.innerHTML = '<label class="col-sm-4 control-label">' + props['lbName'] + '</label><div class="col-sm-8">' + myselect[0].outerHTML + '</div>';
-                    return fg;
-                }
-
                 $("#addform").click(function() {
                     if (count == 2) {
                         console.log("err max");
@@ -206,55 +59,61 @@
                     }
                     console.log(count);
                 });
-
-                var count = 0;
             });
         </script>
     }
 <form class="form-horizontal" id="info" action="@Url.Action("Index", "Payment")" method="post">
+    @if (ViewBag.File != null)
+    {
+        @Html.Partial("Success")
+    }
+    @if (ViewBag.Errors != null)
+    {
+        @Html.Partial("Failed")
+    }    
     @for (var i = 0; i < Model.Count; i++)
     {
         if (Model[i].IsUse)
         {
-        <div id="@String.Format("form{0}",i)" style = "@String.Format("display:{0}", (@i > 0) ? "none" : "block")">
-            <div class="form-group">
-                @Html.LabelFor(pi => pi[i].FidINN, new { @class = "col-sm-4 control-label" })
-                <div class="col-sm-8">
-                    @Html.EditorFor(pi => pi[i].FidINN, new { htmlAttributes = new { @class = "form-control", placeholder = "ИНН" } })
+            <div id="@String.Format("form{0}",i)">
+                <div class="form-group">
+                    @Html.LabelFor(pi => pi[i].FidINN, new { @class = "col-sm-4 control-label" })
+                    <div class="col-sm-8">
+                        @Html.EditorFor(pi => pi[i].FidINN, new { htmlAttributes = new { @class = "form-control", placeholder = "ИНН" } })
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(pi => pi[i].FidAdress, new { @class = "col-sm-4 control-label" })
-                <div class="col-sm-8">
-                    @Html.EditorFor(pi => pi[i].FidAdress, new { htmlAttributes = new { @maxlength = "100", @class = "form-control", placeholder = "Адрес" } })
+                <div class="form-group">
+                    @Html.LabelFor(pi => pi[i].FidAdress, new { @class = "col-sm-4 control-label" })
+                    <div class="col-sm-8">
+                        @Html.EditorFor(pi => pi[i].FidAdress, new { htmlAttributes = new { @maxlength = "100", @class = "form-control", placeholder = "Адрес" } })
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(pi => pi[i].FidArea, new { @class = "col-sm-4 control-label" })
-                <div class="col-sm-8">
-                    @Html.EditorFor(pi => pi[i].FidArea, new { htmlAttributes = new { @class = "form-control", @placeholder = "Площадь" } })
+                <div class="form-group">
+                    @Html.LabelFor(pi => pi[i].FidArea, new { @class = "col-sm-4 control-label" })
+                    <div class="col-sm-8">
+                        @Html.EditorFor(pi => pi[i].FidArea, new { htmlAttributes = new { @class = "form-control", @placeholder = "Площадь" } })
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(pi => pi[i].FidSum, new { @class = "col-sm-4 control-label" })
-                <div class="col-sm-8">
-                    @Html.EditorFor(pi => pi[i].FidSum, new { htmlAttributes = new { @class = "form-control", @placeholder = "Сумма" } })
+                <div class="form-group">
+                    @Html.LabelFor(pi => pi[i].FidSum, new { @class = "col-sm-4 control-label" })
+                    <div class="col-sm-8">
+                        @Html.EditorFor(pi => pi[i].FidSum, new { htmlAttributes = new { @class = "form-control", @placeholder = "Сумма" } })
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(pi => pi[i].FidPeriods, new { @class = "col-sm-4 control-label" })
-                <div class="col-sm-8">
-                    @Html.DropDownListFor(pi => pi[i].FidPeriods, @periods, new { @class = "form-control" })
+                <div class="form-group">
+                    @Html.LabelFor(pi => pi[i].FidPeriods, new { @class = "col-sm-4 control-label" })
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(pi => pi[i].FidPeriods, @periods, new { @class = "form-control" })
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(pi => pi[i].FidDate, new { @class = "col-sm-4 control-label" })
-                <div class="col-sm-8">
-                    @Html.EditorFor(pi => pi[i].FidDate, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Дата" } })
+                <div class="form-group">
+                    @Html.LabelFor(pi => pi[i].FidDate, new { @class = "col-sm-4 control-label" })
+                    <div class="col-sm-8">
+                        @Html.EditorFor(pi => pi[i].FidDate, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Дата" } })
+                    </div>
                 </div>
+                @Html.HiddenFor(pi => pi[i].IsUse);
             </div>
-            @Html.HiddenFor(pi => pi[i].IsUse);
-        </div>
         }
     }
     <div class="form-group">
@@ -263,8 +122,8 @@
         </div>
         <div class="col-sm-offset-3 col-sm-3">
             <div class="btn-group pull-right" role="group">
-                <button type="button" id="remform" class="btn btn-danger" disabled="true">Удалить</button>
-                <button type="button" id="addform" class="btn btn-success ">Добавить</button>
+                <button type="button" id="remform" class="btn btn-danger" @Html.Raw((@Model.Count == 1) ? "disabled" : "")>Удалить</button>
+                <button type="button" id="addform" class="btn btn-success" @Html.Raw((@Model.Count == 3) ? "disabled" : "")>Добавить</button>
             </div>
         </div>
     </div>
