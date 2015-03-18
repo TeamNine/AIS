@@ -12,58 +12,39 @@ namespace AIS.Utils
         public static IEnumerable<string> IsValid(PaymentInfo info, int c)
         {
             var errors = new List<String>();
-            int count = 0;
+
             //проверка ИНН 12 цифр
-            Match isMatch = Regex.Match(info.FidINN, "^[0-9]{12}$");
-            if (!isMatch.Success)
+            if (String.IsNullOrEmpty(info.FidINN) || !Regex.Match(info.FidINN, "^[0-9]{12}$").Success)
             {
-                count++;
                 errors.Add("[" + c + "].FidINN");
             }
 
             //Проверка адреса от 1-255 символов
-            if (info.FidAdress.Length > 255 || info.FidAdress.Length < 1)
-            { 
-               count++;
-               errors.Add("[" + c + "].FidAdress");
+            if (String.IsNullOrEmpty(info.FidAdress) || (info.FidAdress.Length > 255 || info.FidAdress.Length < 1))
+            {
+                errors.Add("[" + c + "].FidAdress");
             }
-
 
             //Проверка площади число или число с 2 цифрами после запятой
-            isMatch = Regex.Match(info.FidArea, @"^[0-9]+[,]{1}[0-9]{1,2}$");
-            if (!isMatch.Success)
+            if (String.IsNullOrEmpty(info.FidArea) || !Regex.Match(info.FidArea, @"^[0-9]+[,]{1}[0-9]{1,2}$").Success || !Regex.Match(info.FidArea, "^[0-9]+$").Success)
             {
-                isMatch = Regex.Match(info.FidArea, "^[0-9]+$");
-                if (!isMatch.Success)
-                {
-                    count++;
                     errors.Add("[" + c + "].FidArea");
-            }
             }
 
             //Проверка суммы число или число с 2 цифрами после запятой    
-            isMatch = Regex.Match(info.FidSum, @"^[0-9]+[,]{1}[0-9]{1,2}");
-            if (!isMatch.Success)
-            {
-                isMatch = Regex.Match(info.FidSum, "^[0-9]+$");
-                if (!isMatch.Success)
-                { 
-                    count++;
+            if (String.IsNullOrEmpty(info.FidSum) || !Regex.Match(info.FidSum, @"^[0-9]+[,]{1}[0-9]{1,2}").Success || !Regex.Match(info.FidSum, "^[0-9]+$").Success)
+                {
                     errors.Add("[" + c + "].FidSum");
                 }
-            }
+
             //проверка квартала год четыре цифры затем - и цифра 1-8
-            isMatch = Regex.Match(info.FidPeriods, "^[0-9]{4}-[1-8]{1}$");
-            if (!isMatch.Success)
-            { 
-                count++;
+            if (String.IsNullOrEmpty(info.FidPeriods) || !Regex.Match(info.FidPeriods, "^[0-9]{4}-[1-8]{1}$").Success)
+            {
                 errors.Add("[" + c + "].FidPeriods");
             }
 
-            isMatch = Regex.Match(info.FidDate, @"^\d{2}\.\d{2}\.\d{4}$");
-            if (!isMatch.Success)
+            if (String.IsNullOrEmpty(info.FidDate) || !Regex.Match(info.FidDate, @"^\d{2}\.\d{2}\.\d{4}$").Success)
             {
-                count++;
                 errors.Add("[" + c + "].FidDate");
             }
             else
@@ -77,12 +58,11 @@ namespace AIS.Utils
                 }
                 catch (System.FormatException)
                 {
-                    count++;
+                    errors.Add("[" + c + "].FidDate");
                 }
 
                 if (d < old || d > n)
                 {
-                    count++;
                     errors.Add("[" + c + "].FidDate");
                 }
             }

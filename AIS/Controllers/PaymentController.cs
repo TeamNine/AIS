@@ -23,13 +23,17 @@ namespace AIS.Controllers
         public ActionResult Index(List<PaymentInfo> paymentInfo)
         {
             var errors = new List<String>();
+            if (paymentInfo == null || paymentInfo.Count == 0)
+                return View(new List<PaymentInfo> {new PaymentInfo() {IsUse = true}});
+
             for (int i = 0; i < paymentInfo.Count; i++)
                 if (paymentInfo[i].IsUse)
                 {
-                    paymentInfo[i].FidArea = paymentInfo[i].FidArea.TrimEnd(',', '.');
-                    paymentInfo[i].FidSum = paymentInfo[i].FidSum.TrimEnd(',', '.');
+                    if (!String.IsNullOrEmpty(paymentInfo[i].FidArea)) 
+                        paymentInfo[i].FidArea = paymentInfo[i].FidArea.TrimEnd(',', '.');
+                    if (!String.IsNullOrEmpty(paymentInfo[i].FidSum)) 
+                        paymentInfo[i].FidSum = paymentInfo[i].FidSum.TrimEnd(',', '.');
                     errors.AddRange(Validator.IsValid(paymentInfo[i], i));
-                    //errors += Validator.IsValid(info);
                 }
 
             if (errors.Count == 0)
@@ -48,6 +52,11 @@ namespace AIS.Controllers
                 return View(list);
             }
             ViewBag.Errors = true;
+            //ViewBag.ErrorsArray = errors;
+            //foreach (var error in errors)
+            //{
+            //    ModelState.Remove(String.Empty);
+            //}
             return View(paymentInfo);
 
         }
