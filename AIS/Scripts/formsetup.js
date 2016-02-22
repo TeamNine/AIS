@@ -136,6 +136,7 @@ function addForm(c) {
     });
     var form = $('<div/>', {
         id: 'form' + c,
+        'class': "panel-body"
     });
 
     form.append(FidINN).append(FidAdress).append(FidArea).append(FidSum).append(FidPeriods).append(FidDate).append(FidIsUse);

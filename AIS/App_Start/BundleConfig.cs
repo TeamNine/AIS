@@ -11,6 +11,8 @@ namespace AIS.App_Start
         // For more information on Bundling, visit http://go.microsoft.com/fwlink/?LinkId=254725
         public static void RegisterBundles(BundleCollection bundles)
         {
+            bundles.IgnoreList.Clear();
+
             // TODO add CDN
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include("~/Scripts/jquery-1.11.2.js"));
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/Scripts/jquery-ui-1.11.3.js"));

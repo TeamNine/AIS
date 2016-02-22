@@ -1,7 +1,7 @@
 ﻿@using System.Globalization
 @model List<AIS.Models.PaymentInfo>
     @{
-        ViewBag.Title = "Index";
+        ViewBag.Title = "Торговый сбор";
         Layout = "~/Views/Shared/_Layout.cshtml";
 
         var periods = new List<SelectListItem>();
@@ -18,7 +18,16 @@
     {
         <script>
             jQuery(function ($) {
-                $("#info").validate();
+                var settngs = $("#info").validate().settings;
+                //var settngs = $.data($('#info'), 'validator').settings;
+                settngs.errorClass = "err-label";
+                settngs.highlight = function (element, errorClass) {
+                    $(element.offsetParent).addClass("has-error");
+                };
+                settngs.unhighlight = function (element, errorClass) {
+                    $(element.offsetParent).removeClass("has-error");
+                }
+
                 var count =  @Html.Raw((Model.Count-1) + ";")
                 @for (var i = 0; i < Model.Count; i++)
                 {
@@ -66,6 +75,10 @@
             });
         </script>
     }
+               <div class="page-header text-center">
+                   <h1>Форма заполнения торгового сбора</h1>
+               </div>
+
 <form class="form-horizontal" id="info" action="@Url.Action("Index", "Payment")" method="post">
     @if (ViewBag.File != null)
     {
@@ -76,51 +89,51 @@
         @Html.Partial("Failed")
     }    
     @for (var i = 0; i < Model.Count; i++)
+{
+    if (Model[i].IsUse)
     {
-        if (Model[i].IsUse)
-        {
-            <div id="@String.Format("form{0}",i)">
-                <div class="form-group">
-                    @Html.LabelFor(pi => pi[i].FidINN, new { @class = "col-sm-4 control-label" })
-                    <div class="col-sm-8">
-                        @Html.EditorFor(pi => pi[i].FidINN, new { htmlAttributes = new { @class = "form-control", placeholder = "ИНН" } })
-                    </div>
+        <div id="@String.Format("form{0}",i)" class="panel-body">
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidINN, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidINN, new { htmlAttributes = new { @class = "form-control", placeholder = "ИНН" } })
                 </div>
-                <div class="form-group">
-                    @Html.LabelFor(pi => pi[i].FidAdress, new { @class = "col-sm-4 control-label" })
-                    <div class="col-sm-8">
-                        @Html.EditorFor(pi => pi[i].FidAdress, new { htmlAttributes = new { @maxlength = "100", @class = "form-control", placeholder = "Адрес" } })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(pi => pi[i].FidArea, new { @class = "col-sm-4 control-label" })
-                    <div class="col-sm-8">
-                        @Html.EditorFor(pi => pi[i].FidArea, new { htmlAttributes = new { @class = "form-control", @placeholder = "Площадь" } })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(pi => pi[i].FidSum, new { @class = "col-sm-4 control-label" })
-                    <div class="col-sm-8">
-                        @Html.EditorFor(pi => pi[i].FidSum, new { htmlAttributes = new { @class = "form-control", @placeholder = "Сумма" } })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(pi => pi[i].FidPeriods, new { @class = "col-sm-4 control-label" })
-                    <div class="col-sm-8">
-                        @Html.DropDownListFor(pi => pi[i].FidPeriods, @periods, new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(pi => pi[i].FidDate, new { @class = "col-sm-4 control-label" })
-                    <div class="col-sm-8">
-                        @Html.EditorFor(pi => pi[i].FidDate, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Дата" } })
-                    </div>
-                </div>
-                @Html.HiddenFor(pi => pi[i].IsUse);
             </div>
-        }
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidAdress, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidAdress, new { htmlAttributes = new { @maxlength = "100", @class = "form-control", placeholder = "Адрес" } })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidArea, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidArea, new { htmlAttributes = new { @class = "form-control", @placeholder = "Площадь" } })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidSum, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidSum, new { htmlAttributes = new { @class = "form-control", @placeholder = "Сумма" } })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidPeriods, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(pi => pi[i].FidPeriods, @periods, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(pi => pi[i].FidDate, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.EditorFor(pi => pi[i].FidDate, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Дата" } })
+                </div>
+            </div>
+            @Html.HiddenFor(pi => pi[i].IsUse)
+        </div>
     }
-    <div class="form-group">
+}
+    <div class="form-group panel-body">
         <div class="col-sm-offset-4 col-sm-2">
             <button type="submit" class="btn btn-default">Отправить</button>
         </div>

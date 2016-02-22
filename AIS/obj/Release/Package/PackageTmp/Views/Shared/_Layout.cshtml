@@ -16,34 +16,14 @@
     <!-- Site css-->
     @Styles.Render("~/Content/site")
     <script>
-        var Today = "@(DateTime.Now.ToShortDateString())"; //"16.03.2015"//
+        var Today = "@(DateTime.Now.ToShortDateString())";
     </script>
 </head>
-<body>
-    <!-- Header -->
-    <nav class="navbar navbar-default">
-        <div class="container">
-            <div class="navbar-header">
-                <p class="navbar-brand">AIS</p>
-            </div>
-        </div>
-    </nav>
-
+<body style="background-color: #979797">
     <!-- Begin page content -->
-    <div class="container" style="background-color: azure">
-        <div class="page-header" style="margin: 0">
-            <h1>AIS</h1>
-        </div>
+    <div class="container img-rounded" style="background-color: white">
         @RenderBody()
     </div>
-
-    <!-- Footer -->
-    <footer class="footer navbar-inverse">
-        <div class="container">
-            <p class="text-muted">2015</p>
-        </div>
-    </footer>
-    
     <!-- jQuery -->
     @Scripts.Render("~/bundles/jquery")
     <!-- jQuery ui -->

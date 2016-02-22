@@ -760,7 +760,7 @@ $.extend( $.validator, {
 				// create error element
 				error = $( "<" + this.settings.errorElement + ">" )
 					.attr( "id", elementID + "-error" )
-					.addClass( this.settings.errorClass )
+					.addClass(this.settings.errorClass )
 					.html( message || "" );
 
 				// Maintain reference to the element to be placed into the DOM

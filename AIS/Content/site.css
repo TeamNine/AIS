@@ -3,20 +3,9 @@
   min-height: 100%;
 }
 body {
-  margin-bottom: 60px;
+  padding-top: 70px;
 }
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
-}
-
-.footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-code {
-  font-size: 80%;
+.has-error .err-label
+{
+  color: #a94442;
 }
